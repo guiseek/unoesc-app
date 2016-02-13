@@ -9,3 +9,11 @@ var db = mongoose.connect(config.db, function(err) {
         console.log(err);
     }
 });
+
+var app = require('./config/express')(db);
+
+app.listen(config.port);
+
+exports = module.exports = app;
+
+console.log('Unoesc App funcionando na porta ' + config.port);
