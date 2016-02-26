@@ -3,7 +3,7 @@
 var mongoose = require('mongoose'),
     Schema = mongoose.Schema;
 
-var BrewerySchema = new Schema({
+var BeerSchema = new Schema({
     name: {
         type: String,
         unique: true,
@@ -17,16 +17,20 @@ var BrewerySchema = new Schema({
     },
     updated: {
         type: Date
+    },
+    brewery: {
+        type: Schema.ObjectId,
+        ref: 'Brewery'
     }
 });
 
-BrewerySchema.pre('save', function(next) {
-    var brewery = this;
+BeerSchema.pre('save', function(next) {
+    var beer = this;
     if (this.isNew) {
-        brewery.created = new Date();
+        beer.created = new Date();
     }
-    brewery.updated = new Date();
+    beer.updated = new Date();
     next();
 });
 
-module.exports = mongoose.model('Brewery', BrewerySchema);
+module.exports = mongoose.model('Beer', BeerSchema);
