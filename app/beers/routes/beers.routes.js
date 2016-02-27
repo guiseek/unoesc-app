@@ -1,7 +1,11 @@
 'use strict';
 
+var auth = require('../../users/controllers/auth.controller');
+
 module.exports = function(api) {
     var beers = require('../controllers/beers.controller');
+    
+    api.use(auth.validateToken);
     
     api.route('/beers')
         .get(beers.findAll)

@@ -28,3 +28,18 @@ exports.login = function(req, res) {
         });
     });
 }
+exports.validateToken = function(req, res, next) {
+    var token = req.body.token || req.params.token || req.headers['authorization'];
+    if (token) {
+        jwt.verify(token, secret, function(err, decoded) {
+            if (err) {
+                res.status(401).json({ message: 'Falha na validação do token' });
+            } else {
+                req.auth = decoded.doc;
+                next();
+            }
+        });
+    } else {
+        res.status(403).json({ message: 'Nenhum token fornecido' });
+    }
+}
