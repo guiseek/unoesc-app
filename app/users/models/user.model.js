@@ -15,16 +15,29 @@ var UserSchema = new Schema({
     },
     name: {
         type: String
+    },
+    roles: {
+        type: Array,
+        default: ['user']
     }
 });
 
-// BrewerySchema.pre('save', function(next) {
-//     var brewery = this;
-//     if (this.isNew) {
-//         brewery.created = new Date();
-//     }
-//     brewery.updated = new Date();
-//     next();
-// });
+UserSchema.pre('save', function(next) {
+    var user = this;
+    if (this.isModified('password') || this.isNew) {
+        user.password = user.password;
+        //TODO usar lib bcryptjs para criptografar senha
+    }
+    next();
+});
+
+UserSchema.methods.comparePassword = function(passwd, callback) {
+    //TODO implementar o bcrypt.compare
+    if (passwd == this.password) {
+        callback(true);
+    } else {
+        callback(false); 
+    }
+};
 
 module.exports = mongoose.model('User', UserSchema);

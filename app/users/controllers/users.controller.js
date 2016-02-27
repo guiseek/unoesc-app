@@ -4,7 +4,7 @@ var mongoose = require('mongoose'),
     User = require('../models/user.model');
 
 exports.findAll = function(req, res) {
-    User.find({}).exec(function(err, users) {
+    User.find({}, '-password').exec(function(err, users) {
         if (err) {
             console.error(err);
             res.status(400).json(err);
@@ -18,6 +18,9 @@ exports.find = function(req, res) {
 };
 exports.create = function(req, res) {
     var user = new User(req.body);
+    if (user.roles.length == 0) {
+        user.roles = ['user'];
+    }
     user.save(function(err) {
         if (err) {
             res.status(400).json({
@@ -25,7 +28,7 @@ exports.create = function(req, res) {
             });
         } else {
             res.json({
-                message: 'Usuário criada com sucesso',
+                message: 'Usuário criado com sucesso',
                 user: user
             });
         }
@@ -35,7 +38,10 @@ exports.update = function(req, res) {
     var user = req.user;
     user.name = req.body.name;
     user.email = req.body.email;
-    user.password = req.body.password;
+    user.roles = req.body.roles;
+    if (req.body.password) {
+        user.password = req.body.password;
+    }
     user.save(function(err) {
         if (err) {
             res.status(400).json({
@@ -43,7 +49,7 @@ exports.update = function(req, res) {
             });
         } else {
             res.json({
-                message: 'Usuário alterada com sucesso',
+                message: 'Usuário alterado com sucesso',
                 user: user
             });
         }
@@ -58,7 +64,7 @@ exports.delete = function(req, res) {
             });
         } else {
             res.json({
-                message: 'Usuário removida com sucesso',
+                message: 'Usuário removido com sucesso',
                 user: user
             });
         }
@@ -67,7 +73,7 @@ exports.delete = function(req, res) {
 exports.userById = function(req, res, next, userId) {
     if (!mongoose.Types.ObjectId.isValid(userId)) {
         res.status(400).json({
-            message: 'Usuário inválida'
+            message: 'Usuário inválido'
         })
     }
     User.findById(userId).exec(function(err, user) {
